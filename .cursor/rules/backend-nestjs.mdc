@@ -1,0 +1,415 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🚨 **REGLAS CRÍTICAS PARA TODO EL EQUIPO DELICIA** 🚨
+
+## ⚠️ **USO OBLIGATORIO DE 5 SERVIDORES MCP + VERIFICACIÓN DE DIRECTORIOS**
+
+### 🔧 **CURL MCP - Para Operaciones CRUD**
+```
+❌ PROHIBIDO: Usar consola/terminal para operaciones CRUD
+✅ OBLIGATORIO: Usar servidor MCP "curl" para:
+- Probar endpoints del backend
+- Verificar respuestas de APIs
+- Debugging de llamadas HTTP
+- Validar integraciones
+```
+
+### ⏰ **TIME MCP - Para Fecha y Hora**
+```
+✅ OBLIGATORIO: Usar servidor MCP "time" para:
+- Documentar tareas completadas con timestamp exacto
+- Reportes con fecha/hora actual
+- Logging de eventos importantes
+- Seguimiento temporal de desarrollo
+
+Ejemplo: [✅ 2024-01-15 14:30:22] Task 1.1 completada - Setup inicial
+```
+
+### 📚 **CONTEXT7 MCP - Documentación Actualizada**
+```
+❌ PROHIBIDO: Asumir conocimiento de librerías/frameworks
+✅ OBLIGATORIO: Usar servidor MCP "context7" para:
+- Consultar documentación actualizada de React, NestJS, Prisma
+- Verificar sintaxis correcta antes de implementar
+- Obtener mejores prácticas actuales
+- Resolver dudas técnicas específicas
+
+NO SE HAGAN LOS LISTOS - SIEMPRE CONSULTEN CONTEXT7
+```
+
+### 🧠 **MEMORY MCP - Coordinación del Equipo**
+```
+✅ OBLIGATORIO: Usar servidor MCP "memory" para:
+- Comunicación entre Frontend ↔ Backend ↔ IA
+- Notas rápidas pero importantes
+- Mensajes para otros miembros del equipo
+- Coordinación de dependencias
+
+ESTRUCTURA DE ENTIDADES:
+- Entidad "Frontend" - mensajes para desarrollador frontend
+- Entidad "Backend" - mensajes para desarrollador backend  
+- Entidad "IA" - mensajes para desarrollador IA
+- Entidad "General" - notas del proyecto general
+
+Ejemplo: "Necesito que Backend complete Task 2.1 antes de integrar login"
+```
+
+### 🗄️ **POSTGRES MCP - Base de Datos Directa**
+```
+✅ OBLIGATORIO: Usar servidor MCP "postgres" para:
+- Consultas directas a la base de datos cuando sea necesario
+- Verificar datos durante desarrollo
+- Debugging de problemas de datos
+- Operaciones manuales urgentes
+
+⚠️ IMPORTANTE: La base de datos se mantiene con migraciones Prisma
+❌ NO usar para cambios de schema - usar Prisma migrate
+✅ SÍ usar para consultas, verificaciones y operaciones manuales
+
+Ejemplo: Verificar si un pedido se creó correctamente o consultar datos específicos
+```
+
+### 💻 **EJECUCIÓN DE COMANDOS - DIRECTORIOS CRÍTICOS**
+```
+🚨 CRÍTICO: VERIFICAR DIRECTORIO ANTES DE EJECUTAR COMANDOS
+
+ESTRUCTURA DEL PROYECTO:
+DelicIA/
+├── frontend/          ← Aquí ejecutar comandos de React/Vite
+├── backend/           ← Aquí ejecutar comandos de NestJS/Prisma  
+└── [otros archivos]
+
+⚠️ ANTES DE EJECUTAR CUALQUIER COMANDO:
+1. pwd / Get-Location - Verificar directorio actual
+2. Cambiar al directorio correcto si es necesario
+3. NUNCA ejecutar comandos desde directorio incorrecto
+
+COMANDOS POR DIRECTORIO:
+
+📁 FRONTEND (DelicIA/frontend/):
+✅ npm run dev          - Levantar servidor desarrollo
+✅ npm run build        - Build de producción
+✅ npm install [pkg]    - Instalar dependencias React
+✅ npx shadcn add [comp] - Agregar componentes ShadCN
+
+📁 BACKEND (DelicIA/backend/):
+✅ npm run start:dev    - Levantar servidor NestJS
+✅ npm run build        - Build de producción
+✅ npx prisma migrate dev - Ejecutar migraciones
+✅ npx prisma generate  - Generar cliente Prisma
+✅ npm install [pkg]    - Instalar dependencias NestJS
+
+❌ ERRORES COMUNES A EVITAR:
+- Ejecutar 'npm run dev' desde DelicIA/ (directorio raíz)
+- Ejecutar comandos de Prisma desde frontend/
+- Ejecutar comandos de React desde backend/
+- No verificar directorio antes de instalar dependencias
+
+🔧 COMANDOS DE VERIFICACIÓN:
+Windows: Get-Location o pwd
+Linux/Mac: pwd
+```
+
+---
+
+# Backend NestJS Rules - Delicia
+
+## 🏗️ Arquitectura Modular
+
+### Estructura de Módulos
+```typescript
+// ✅ Estructura recomendada
+modules/
+  auth/
+    ├── auth.module.ts
+    ├── auth.controller.ts
+    ├── auth.service.ts
+    ├── dto/
+    │   ├── login.dto.ts
+    │   └── register.dto.ts
+    ├── guards/
+    └── strategies/
+```
+
+### Decorators Apropiados
+```typescript
+// ✅ Usar decorators correctos
+@Injectable()
+export class AuthService {}
+
+@Controller('auth')
+export class AuthController {}
+
+@UseGuards(JwtAuthGuard)
+@Get('profile')
+async getProfile() {}
+```
+
+## 🗄️ Prisma y Base de Datos
+
+### Queries Optimizadas
+```typescript
+// ✅ Usar select/include apropiados
+const booking = await this.prisma.booking.findUnique({
+  where: { id },
+  select: {
+    id: true,
+    totalAmount: true,
+    tour: {
+      select: {
+        id: true,
+        title: true
+      }
+    }
+  }
+});
+
+// ✅ Eager loading para reducir N+1 queries
+const tours = await this.prisma.tour.findMany({
+  include: {
+    destinations: true,
+    departureDates: true
+  }
+});
+```
+
+### Transacciones para Operaciones Críticas
+```typescript
+// ✅ Usar transacciones para operaciones atómicas
+const result = await this.prisma.$transaction(async (tx) => {
+  const booking = await tx.booking.create({
+    data: bookingData
+  });
+  
+  await tx.departureDate.update({
+    where: { id: departureDateId },
+    data: {
+      availableSpots: {
+        decrement: passengers.length
+      }
+    }
+  });
+  
+  return booking;
+});
+```
+
+### Migraciones
+```bash
+# ✅ Comandos para migraciones
+npx prisma migrate dev --name descriptive_migration_name
+npx prisma generate
+npx prisma db push # Solo para desarrollo
+```
+
+## 🔍 Validación con class-validator
+
+### DTOs con Validación
+```typescript
+// ✅ DTOs robustos con validación
+export class CreateBookingDto {
+  @IsUUID()
+  @IsNotEmpty()
+  tourId: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PassengerDto)
+  passengers: PassengerDto[];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  specialRequests?: string;
+
+  @IsNumber()
+  @IsPositive()
+  totalAmount: number;
+}
+```
+
+### Pipes de Validación
+```typescript
+// ✅ Usar ValidationPipe globalmente
+app.useGlobalPipes(new ValidationPipe({
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true,
+  transformOptions: {
+    enableImplicitConversion: true
+  }
+}));
+```
+
+## ⚠️ Manejo de Errores
+
+### Exception Filters Personalizados
+```typescript
+// ✅ Filters de excepción estructurados
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const status = exception.getStatus();
+
+    response.status(status).json({
+      statusCode: status,
+      message: exception.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+```
+
+### Logging Estructurado
+```typescript
+// ✅ Logging con contexto
+@Injectable()
+export class BookingsService {
+  private readonly logger = new Logger(BookingsService.name);
+
+  async create(createBookingDto: CreateBookingDto) {
+    this.logger.log(`Creating booking for tour ${createBookingDto.tourId}`);
+    
+    try {
+      // lógica del servicio
+      this.logger.log(`Booking created successfully: ${result.id}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`Failed to create booking: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+}
+```
+
+## 🔐 Guards y Middleware
+
+### Guards de Autenticación
+```typescript
+// ✅ Guards apropiados
+@UseGuards(JwtAuthGuard)
+@UseGuards(RolesGuard)
+@Roles('admin')
+@Get('admin/bookings')
+async getAdminBookings() {}
+```
+
+### Rate Limiting
+```typescript
+// ✅ Rate limiting para endpoints sensibles
+@UseGuards(ThrottlerGuard)
+@Throttle(5, 60) // 5 requests por minuto
+@Post('login')
+async login() {}
+```
+
+## 📊 Performance y Optimización
+
+### Caching
+```typescript
+// ✅ Cache para datos frecuentes
+@Injectable()
+export class ToursService {
+  @Cacheable('tours', 300) // 5 minutos
+  async findAll() {
+    return this.prisma.tour.findMany();
+  }
+}
+```
+
+### Paginación
+```typescript
+// ✅ Paginación server-side
+async findMany(page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+  
+  const [data, total] = await Promise.all([
+    this.prisma.tour.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    this.prisma.tour.count()
+  ]);
+  
+  return {
+    data,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+}
+```
+
+## 🛡️ Seguridad
+
+### Sanitización de Entrada
+```typescript
+// ✅ Sanitizar y validar entradas
+@Post()
+async create(
+  @Body(new ValidationPipe({ transform: true, whitelist: true }))
+  createDto: CreateTourDto
+) {
+  // Los datos ya están validados y sanitizados
+  return this.service.create(createDto);
+}
+```
+
+### Headers de Seguridad
+```typescript
+// ✅ Configurar headers de seguridad
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"]
+    }
+  }
+}));
+```
+
+## 📋 Checklist Backend
+
+- [ ] Módulos organizados por feature
+- [ ] DTOs con validación class-validator
+- [ ] Queries Prisma optimizadas
+- [ ] Transacciones para operaciones críticas
+- [ ] Exception filters implementados
+- [ ] Logging estructurado
+- [ ] Guards de autenticación y autorización
+- [ ] Rate limiting en endpoints sensibles
+- [ ] Paginación server-side
+- [ ] Caching para datos frecuentes
+- [ ] Headers de seguridad configurados
+
+## ⛔ Anti-patrones Backend
+
+- Queries N+1 sin optimizar
+- Operaciones sin transacciones
+- DTOs sin validación
+- Hardcodear valores de configuración
+- Ignorar manejo de errores
+- Logs sin contexto
+- Endpoints sin rate limiting
+- Datos sensibles en logs
+
+## 🚨 **RECORDATORIO FINAL MCP**
+
+**ANTES DE CUALQUIER IMPLEMENTACIÓN:**
+1. ⏰ Consultar TIME para timestamp actual
+2. 📚 Consultar CONTEXT7 para documentación actualizada  
+3. 🧠 Revisar MEMORY para mensajes del equipo
+4. 🔧 Usar CURL para probar funcionalidad
+5. 🗄️ Usar POSTGRES para consultas directas cuando sea necesario
+6. 💻 VERIFICAR DIRECTORIO antes de ejecutar comandos
+
+**¡NO EXCEPCIONES! ESTOS 6 PUNTOS SON OBLIGATORIOS** 🚨

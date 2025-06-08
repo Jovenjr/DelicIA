@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test WebSocket Delicia</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .log { 
+            background: #f5f5f5; 
+            padding: 10px; 
+            height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid #ddd; 
+            margin: 20px 0;
+        }
+        .controls { margin: 20px 0; }
+        button { margin: 5px; padding: 8px 16px; }
+        input { margin: 5px; padding: 8px; width: 300px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Test WebSocket Delicia</h1>
+        
+        <div class="controls">
+            <h3>1. Autenticación</h3>
+            <input type="text" id="tokenInput" placeholder="JWT Token (opcional para test)" />
+            <button onclick="connect()">Conectar WebSocket</button>
+            <button onclick="disconnect()">Desconectar</button>
+        </div>
+
+        <div class="controls">
+            <h3>2. Test de Eventos</h3>
+            <input type="text" id="orderIdInput" placeholder="Order ID (UUID)" value="test-order-123" />
+            <button onclick="joinOrderRoom()">Unirse a Sala de Pedido</button>
+            <button onclick="leaveOrderRoom()">Salir de Sala de Pedido</button>
+        </div>
+
+        <div class="controls">
+            <h3>3. Notificaciones</h3>
+            <button onclick="sendKitchenNotification()">Notificar Cocina</button>
+            <button onclick="sendCashierNotification()">Notificar Caja</button>
+            <button onclick="updateOrderStatus()">Actualizar Estado Pedido</button>
+        </div>
+
+        <div class="log" id="log">
+            <div><strong>Log de conexión WebSocket:</strong></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function connect() {
+            if (socket) {
+                socket.disconnect();
+            }
+
+            socket = io('http://localhost:3000', {
+                transports: ['websocket']
+            });
+
+            socket.on('connect', () => {
+                log('✅ Conectado al WebSocket');
+            });
+
+            socket.on('disconnect', () => {
+                log('❌ Desconectado del WebSocket');
+            });
+
+            socket.on('connect_error', (error) => {
+                log(`❌ Error de conexión: ${error.message}`);
+            });
+
+            // Eventos específicos de la aplicación
+            socket.on('joined-order-room', (data) => {
+                log(`✅ Unido a sala de pedido: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('order-status-updated', (data) => {
+                log(`📦 Estado de pedido actualizado: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('kitchen-notification', (data) => {
+                log(`👨‍🍳 Notificación de cocina: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('cashier-notification', (data) => {
+                log(`💰 Notificación de caja: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('order-ready-notification', (data) => {
+                log(`🛎️ Pedido listo: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('new-order', (data) => {
+                log(`🆕 Nuevo pedido: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('stats-updated', (data) => {
+                log(`📊 Estadísticas actualizadas: ${JSON.stringify(data)}`);
+            });
+
+            socket.on('emergency-alert', (data) => {
+                log(`🚨 ALERTA DE EMERGENCIA: ${JSON.stringify(data)}`);
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                log('Desconectado manualmente');
+            }
+        }
+
+        function joinOrderRoom() {
+            if (!socket) {
+                log('❌ Primero conecta al WebSocket');
+                return;
+            }
+            const orderId = document.getElementById('orderIdInput').value;
+            socket.emit('join-order-room', { orderId });
+            log(`📡 Enviando solicitud para unirse a orden ${orderId}`);
+        }
+
+        function leaveOrderRoom() {
+            if (!socket) {
+                log('❌ Primero conecta al WebSocket');
+                return;
+            }
+            const orderId = document.getElementById('orderIdInput').value;
+            socket.emit('leave-order-room', { orderId });
+            log(`📡 Saliendo de sala de orden ${orderId}`);
+        }
+
+        function sendKitchenNotification() {
+            if (!socket) {
+                log('❌ Primero conecta al WebSocket');
+                return;
+            }
+            socket.emit('notify-kitchen', {
+                orderId: 'test-order-123',
+                message: 'Pedido urgente - prioridad alta',
+                type: 'priority'
+            });
+            log('📡 Enviando notificación a cocina');
+        }
+
+        function sendCashierNotification() {
+            if (!socket) {
+                log('❌ Primero conecta al WebSocket');
+                return;
+            }
+            socket.emit('notify-cashier', {
+                orderId: 'test-order-123',
+                message: 'Pedido listo para entregar',
+                type: 'order_ready'
+            });
+            log('📡 Enviando notificación a caja');
+        }
+
+        function updateOrderStatus() {
+            if (!socket) {
+                log('❌ Primero conecta al WebSocket');
+                return;
+            }
+            socket.emit('update-order-status', {
+                orderId: 'test-order-123',
+                status: 'READY',
+                note: 'Pedido completado y listo',
+                estimatedTime: 0
+            });
+            log('📡 Actualizando estado de pedido a READY');
+        }
+
+        // Auto-conectar al cargar la página
+        log('Página cargada. Haz clic en "Conectar WebSocket" para comenzar.');
+    </script>
+</body>
+</html> 

@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+/* Configuración del tema dominicano para Delicia */
+@theme {
+  /* Colores del mar Caribe */
+  --color-caribbean-50: #eff7ff;
+  --color-caribbean-100: #daebff;
+  --color-caribbean-200: #bdd9ff;
+  --color-caribbean-300: #90c2ff;
+  --color-caribbean-400: #5ca0ff;
+  --color-caribbean-500: #3b82f6;
+  --color-caribbean-600: #1e40af;
+  --color-caribbean-700: #1e3a8a;
+  --color-caribbean-800: #1e3a8a;
+  --color-caribbean-900: #172554;
+
+  /* Rojos vibrantes */
+  --color-coral-50: #fef2f2;
+  --color-coral-100: #fee2e2;
+  --color-coral-200: #fecaca;
+  --color-coral-300: #fca5a5;
+  --color-coral-400: #f87171;
+  --color-coral-500: #ef4444;
+  --color-coral-600: #dc2626;
+  --color-coral-700: #b91c1c;
+  --color-coral-800: #991b1b;
+  --color-coral-900: #7f1d1d;
+
+  /* Verdes tropicales */
+  --color-tropical-50: #ecfdf5;
+  --color-tropical-100: #d1fae5;
+  --color-tropical-200: #a7f3d0;
+  --color-tropical-300: #6ee7b7;
+  --color-tropical-400: #34d399;
+  --color-tropical-500: #10b981;
+  --color-tropical-600: #059669;
+  --color-tropical-700: #047857;
+  --color-tropical-800: #065f46;
+  --color-tropical-900: #064e3b;
+
+  /* Amarillos sol */
+  --color-sunset-50: #fffbeb;
+  --color-sunset-100: #fef3c7;
+  --color-sunset-200: #fde68a;
+  --color-sunset-300: #fcd34d;
+  --color-sunset-400: #fbbf24;
+  --color-sunset-500: #f59e0b;
+  --color-sunset-600: #d97706;
+  --color-sunset-700: #b45309;
+  --color-sunset-800: #92400e;
+  --color-sunset-900: #78350f;
+
+  /* Neutros elegantes */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Tipografías */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-serif: ui-serif, Georgia, serif;
+  --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+}
+
+/* Variables CSS globales */
+:root {
+  /* Colores primarios del proyecto */
+  --primary: var(--color-caribbean-600);
+  --primary-foreground: white;
+  --secondary: var(--color-tropical-500);
+  --secondary-foreground: white;
+  --accent: var(--color-sunset-500);
+  --accent-foreground: var(--color-gray-900);
+  
+  /* Fondo y texto */
+  --background: white;
+  --foreground: var(--color-gray-900);
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-600);
+  
+  /* Bordes y separadores */
+  --border: var(--color-gray-200);
+  --input: var(--color-gray-200);
+  --ring: var(--color-caribbean-600);
+  
+  /* Estados */
+  --destructive: var(--color-coral-500);
+  --destructive-foreground: white;
+}
+
+/* Estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Clases de utilidad personalizadas */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animaciones profesionales */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Clases de animación */
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+/* Efectos hover mejorados */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradientes personalizados */
+.gradient-caribbean {
+  background: linear-gradient(135deg, var(--color-caribbean-500), var(--color-caribbean-600));
+}
+
+.gradient-tropical {
+  background: linear-gradient(135deg, var(--color-tropical-500), var(--color-tropical-600));
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, var(--color-sunset-500), var(--color-sunset-600));
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-caribbean-600), var(--color-tropical-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Efectos de texto */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Bordes con gradiente */
+.border-gradient {
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, var(--color-caribbean-500), var(--color-tropical-500)) border-box;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-gray-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--color-caribbean-500), var(--color-tropical-500));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--color-caribbean-600), var(--color-tropical-600));
+}
