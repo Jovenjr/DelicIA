@@ -52,6 +52,18 @@ npm run start:dev
 
 El servidor estará disponible en: `http://localhost:3000`
 
+Una vez iniciado, puedes acceder a la documentación interactiva generada con **Swagger** en:
+
+```
+http://localhost:3000/docs
+```
+
+Además, el endpoint básico de *health check* está disponible en:
+
+```
+GET http://localhost:3000/health
+```
+
 ## 👥 Usuarios de Prueba
 
 | Rol | Email | Password |
